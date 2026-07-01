@@ -1,0 +1,38 @@
+# Python
+__pycache__/
+*.py[cod]
+*.so
+venv/
+env/
+.env
+.venv/
+*.egg-info/
+dist/
+build/
+*.egg
+
+# Node / Frontend
+node_modules/
+frontend/.vite/
+frontend/dist/
+
+backend/venv/
+
+# Environment & secrets
+.env
+.env.local
+
+# IDE & OS
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# Session storage (if any)
+backend/sessions/
+
+# Model cache (optional, but downloads are free)
+# .cache/
