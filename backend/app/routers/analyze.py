@@ -1,6 +1,7 @@
 from fastapi import APIRouter, UploadFile, File, HTTPException
 from ..models import AnalysisResponse
 from ..services.analyzer import analyze
+import traceback
 
 router = APIRouter()
 
@@ -17,4 +18,5 @@ async def analyze_resume(
         result = analyze(resume_bytes, resume.filename, jd_bytes, job_description.filename)
         return result
     except Exception as e:
+        traceback.print_exc()   # <-- this will show the full error in the terminal
         raise HTTPException(500, str(e))

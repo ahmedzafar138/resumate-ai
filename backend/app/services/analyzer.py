@@ -17,36 +17,27 @@ def analyze(resume_bytes: bytes, resume_name: str, jd_bytes: bytes, jd_name: str
     index = build_index(all_embeddings)
 
     # 3. ATS Score
-    score_query = "Evaluate how well the resume matches the job description. Give a score out of 100 and a short explanation."
-    score_context = retrieve(index, all_chunks, embed_query(score_query), top_k=5)
-    score_prompt = f"""You are an expert ATS (Applicant Tracking System) analyst.
-Resume and Job Description excerpts:
+    score_context = retrieve(index, all_chunks, embed_query("ATS resume match score"), top_k=3)
+    score_prompt = f"""Score this resume against the job description out of 100. Be brief.
+Resume+JD excerpts:
 {score_context}
-
-Task: {score_query}
-Answer concisely."""
+Score:"""
     ats_score = generate(score_prompt)
 
     # 4. Missing Keywords
-    kw_query = "List important skills, keywords, and qualifications from the job description that are missing in the resume. Format as bullet points."
-    kw_context = retrieve(index, all_chunks, embed_query(kw_query), top_k=5)
-    kw_prompt = f"""You are an expert career coach.
+    kw_context = retrieve(index, all_chunks, embed_query("missing skills keywords"), top_k=3)
+    kw_prompt = f"""List important missing keywords from this resume vs job. Bullet points only.
 Excerpts:
 {kw_context}
-
-Task: {kw_query}
-Answer concisely."""
+Keywords:"""
     missing_keywords = generate(kw_prompt)
 
     # 5. Improved Bullets
-    bullet_query = "Suggest improved, quantified bullet points for the resume experience section that better match the job description. Use STAR method."
-    bullet_context = retrieve(index, all_chunks, embed_query(bullet_query), top_k=5)
-    bullet_prompt = f"""You are an expert resume writer.
+    bullet_context = retrieve(index, all_chunks, embed_query("improve resume bullets"), top_k=3)
+    bullet_prompt = f"""Rewrite these resume bullets to be more impactful. Use action verbs and numbers.
 Excerpts:
 {bullet_context}
-
-Task: {bullet_query}
-Answer concisely, output as a bulleted list."""
+Improved:"""
     improved_bullets = generate(bullet_prompt)
 
     return {

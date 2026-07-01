@@ -1,9 +1,9 @@
+from dotenv import load_dotenv
+load_dotenv()                     # ← must be first, before any local imports
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from dotenv import load_dotenv
 from .routers import analyze
-
-load_dotenv()
 
 app = FastAPI(title="ResuMate AI")
 
