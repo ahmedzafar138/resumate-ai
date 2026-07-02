@@ -81,12 +81,15 @@ The current backend code expects `GEMINI_API_KEY` to be set.
 
 ### Frontend Flow
 
-1. The user selects a resume file and a job description file.
-2. `UploadForm` validates that both files are present.
-3. `App.jsx` sends them to `/analyze` with `multipart/form-data`.
-4. While the request is in flight, the UI shows an analyzing state.
-5. On success, the response is passed into the score, keywords, and bullets display components.
-6. On failure, the app shows the backend error or a fallback message.
+1. The user first signs in or creates an account with Supabase.
+2. If the user forgot their password, the frontend sends a Supabase reset email.
+3. After login, the app shows the analyzer shell.
+4. The user selects a resume file and a job description file.
+5. `UploadForm` validates that both files are present.
+6. `App.jsx` sends them to `/analyze` with `multipart/form-data`.
+7. While the request is in flight, the UI shows an analyzing state.
+8. On success, the response is passed into the score, keywords, and bullets display components.
+9. On failure, the app shows the backend error or a fallback message.
 
 ### Frontend Components
 
@@ -100,16 +103,27 @@ The current backend code expects `GEMINI_API_KEY` to be set.
 - `react`
 - `react-dom`
 - `axios`
+- `@supabase/supabase-js`
 - `vite`
 - `@vitejs/plugin-react`
 - `tailwindcss`
 - `postcss`
 - `autoprefixer`
 
+### Frontend Environment
+
+- [frontend/.env.example](frontend/.env.example) - sample Supabase env file.
+
+The current frontend code expects:
+
+- `VITE_SUPABASE_URL`
+- `VITE_SUPABASE_ANON_KEY`
+
 ## Notable Project Points
 
 - The backend is the source of truth for analysis logic.
 - The frontend is thin and only handles file selection, request submission, loading state, and result rendering.
+- The frontend now gates the analyzer behind Supabase auth and adds sign in, sign up, logout, name editing, and forgot-password support.
 - The API currently allows all CORS origins.
 - The response model is string-based, so the UI expects formatted text rather than structured JSON arrays.
 - The project uses a local embedding model and an external Gemini API call in the same request flow.
@@ -121,6 +135,29 @@ The current backend code expects `GEMINI_API_KEY` to be set.
 - The app exposes a health-like root route at `/` that returns a simple status message.
 - Analysis is exposed only through `POST /analyze`.
 - The backend requires installed native-compatible dependencies for FAISS and the sentence transformer model download on first use.
+- The frontend requires Supabase env vars before login will work.
+
+## Setup Commands
+
+Backend:
+
+- `cd backend`
+- `python -m venv venv`
+- `venv\Scripts\activate`
+- `pip install -r requirements.txt`
+- `python -m uvicorn app.main:app --host 0.0.0.0 --port 8000`
+
+Frontend:
+
+- `cd frontend`
+- `npm install`
+- `npm run dev`
+
+Auth setup:
+
+- Add `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` to `frontend/.env`.
+- Configure Supabase email/password auth in the Supabase dashboard.
+- Add your local dev redirect URL to the Supabase auth redirect allow-list if password reset confirmation is used.
 
 ## Keeping This File Current
 

@@ -16,7 +16,7 @@ export default function UploadForm({ onAnalyze, loading }) {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+    <form onSubmit={handleSubmit} className="space-y-6 rounded-[1.75rem] border border-white/10 bg-white/5 p-6 shadow-[0_15px_60px_rgba(0,0,0,0.2)]">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="flex flex-col">
           <label className="text-sm font-medium mb-2 text-gray-300">Resume (PDF/DOCX)</label>
