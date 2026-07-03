@@ -162,75 +162,77 @@ function AppShell({ session, profileName, setProfileName, onSignOut, onSaveName,
   const initial = useMemo(() => (profileName || email || 'U').slice(0, 1).toUpperCase(), [profileName, email]);
 
   return (
-    <div className="min-h-screen bg-[radial-gradient(circle_at_top,_rgba(255,255,255,0.08),_transparent_32%),linear-gradient(135deg,_#6b7280,_#111827_60%,_#0f172a)] p-4 text-gray-100">
-      <div className="mx-auto max-w-5xl rounded-[2rem] border border-white/10 bg-gray-900/70 p-6 shadow-[0_30px_90px_rgba(0,0,0,0.45)] backdrop-blur-xl md:p-8">
-        <div className="mb-8 flex items-center justify-between gap-4">
-          <div>
+    <div className="relative min-h-screen bg-[radial-gradient(circle_at_top,_rgba(255,255,255,0.08),_transparent_32%),linear-gradient(135deg,_#6b7280,_#111827_60%,_#0f172a)] p-4 text-gray-100">
+      <div className="fixed left-4 top-4 z-20">
+        <div className="relative">
+          <button
+            type="button"
+            onClick={() => setProfileOpen((value) => !value)}
+            className="flex items-center gap-3 rounded-2xl border border-white/10 bg-gray-900/75 px-3 py-2 text-left shadow-[0_10px_30px_rgba(0,0,0,0.28)] backdrop-blur-xl transition hover:bg-gray-900/90"
+          >
+            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-gray-300 to-gray-500 text-sm font-bold text-gray-900">
+              {initial}
+            </div>
+            <div className="hidden sm:block">
+              <p className="text-sm font-medium text-white">{profileName || 'Set your name'}</p>
+              <p className="text-xs text-gray-400">{email}</p>
+            </div>
+          </button>
+
+          {profileOpen && (
+            <div className="absolute left-0 mt-3 w-64 rounded-2xl border border-white/10 bg-gray-900 p-3 shadow-2xl">
+              <label className="mb-2 block text-xs uppercase tracking-[0.2em] text-gray-400">Display name</label>
+              <input
+                value={profileName}
+                onChange={(event) => setProfileName(event.target.value)}
+                className="w-full rounded-xl border border-white/10 bg-gray-800/90 px-3 py-2 text-sm text-white outline-none focus:border-gray-400"
+                placeholder="Your name"
+              />
+              <div className="mt-3 grid grid-cols-2 gap-2">
+                <button
+                  type="button"
+                  onClick={onSaveName}
+                  className="rounded-xl bg-gray-700 px-3 py-2 text-sm font-medium text-white transition hover:bg-gray-600"
+                >
+                  Save name
+                </button>
+                <button
+                  type="button"
+                  onClick={onSignOut}
+                  className="rounded-xl border border-white/10 px-3 py-2 text-sm font-medium text-gray-200 transition hover:bg-white/10"
+                >
+                  Logout
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+
+      <div className="flex min-h-[calc(100vh-2rem)] items-center justify-center">
+        <div className="mx-auto w-full max-w-5xl rounded-[2rem] border border-white/10 bg-gray-900/70 p-6 shadow-[0_30px_90px_rgba(0,0,0,0.45)] backdrop-blur-xl md:p-8">
+          <div className="mb-8 text-center">
             <p className="text-xs uppercase tracking-[0.3em] text-gray-400">ResuMate AI</p>
             <h1 className="mt-2 text-3xl font-semibold text-white md:text-4xl">Resume analysis, simplified</h1>
             <p className="mt-2 text-sm text-gray-400">Upload a resume and job description to get an ATS-style breakdown.</p>
           </div>
 
-          <div className="relative">
-            <button
-              type="button"
-              onClick={() => setProfileOpen((value) => !value)}
-              className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/5 px-3 py-2 text-left transition hover:bg-white/10"
-            >
-              <div className="flex h-11 w-11 items-center justify-center rounded-full bg-gradient-to-br from-gray-300 to-gray-500 text-sm font-bold text-gray-900">
-                {initial}
-              </div>
-              <div className="hidden sm:block">
-                <p className="text-sm font-medium text-white">{profileName || 'Set your name'}</p>
-                <p className="text-xs text-gray-400">{email}</p>
-              </div>
-            </button>
+          <UploadForm onAnalyze={handleAnalyze} loading={loading} />
 
-            {profileOpen && (
-              <div className="absolute right-0 mt-3 w-64 rounded-2xl border border-white/10 bg-gray-900 p-3 shadow-2xl">
-                <label className="mb-2 block text-xs uppercase tracking-[0.2em] text-gray-400">Display name</label>
-                <input
-                  value={profileName}
-                  onChange={(event) => setProfileName(event.target.value)}
-                  className="w-full rounded-xl border border-white/10 bg-gray-800/90 px-3 py-2 text-sm text-white outline-none focus:border-gray-400"
-                  placeholder="Your name"
-                />
-                <div className="mt-3 grid grid-cols-2 gap-2">
-                  <button
-                    type="button"
-                    onClick={onSaveName}
-                    className="rounded-xl bg-gray-700 px-3 py-2 text-sm font-medium text-white transition hover:bg-gray-600"
-                  >
-                    Save name
-                  </button>
-                  <button
-                    type="button"
-                    onClick={onSignOut}
-                    className="rounded-xl border border-white/10 px-3 py-2 text-sm font-medium text-gray-200 transition hover:bg-white/10"
-                  >
-                    Logout
-                  </button>
-                </div>
-              </div>
-            )}
-          </div>
+          {error && (
+            <div className="mt-6 rounded-xl border border-red-400/40 bg-red-950/40 p-4 text-red-100">
+              {error}
+            </div>
+          )}
+
+          {result && (
+            <div className="mt-8 space-y-6">
+              <ScoreCard scoreText={result.ats_score} />
+              <KeywordsList keywordsText={result.missing_keywords} />
+              <BulletsList bulletsText={result.improved_bullets} />
+            </div>
+          )}
         </div>
-
-        <UploadForm onAnalyze={handleAnalyze} loading={loading} />
-
-        {error && (
-          <div className="mt-6 rounded-xl border border-red-400/40 bg-red-950/40 p-4 text-red-100">
-            {error}
-          </div>
-        )}
-
-        {result && (
-          <div className="mt-8 space-y-6">
-            <ScoreCard scoreText={result.ats_score} />
-            <KeywordsList keywordsText={result.missing_keywords} />
-            <BulletsList bulletsText={result.improved_bullets} />
-          </div>
-        )}
       </div>
     </div>
   );
@@ -323,11 +325,7 @@ function App() {
     return <div className="min-h-screen bg-gray-950" />;
   }
 
-  if (!supabase) {
-    return <AuthScreen />;
-  }
-
-  if (!session) {
+  if (!supabase || !session) {
     return <AuthScreen />;
   }
 
